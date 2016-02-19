@@ -8,6 +8,18 @@
 function Comic(comicRawData) {
 }
 
+Comic.fromJSON = function (json) {
+    var comic = new Comic();
+
+    comic.baseURL = json.baseURL;
+    comic.nextComic = json.nextComic;
+    comic.pages = json.pages;
+    comic.title = json.title;
+    comic.unread = json.unread;
+
+    return comic;
+}
+
 Comic.fromRaw = function (rawData) {
     var comic = new Comic();
 
@@ -24,6 +36,11 @@ Comic.fromRaw = function (rawData) {
     return comic;
 }
 
-Comic.prototype.markPage = function (page) {
-
+Comic.prototype.markPage = function (location) {
+    for (var i = 0; i < this.pages.length; i++) {
+        var page = this.pages[i];
+        if (page.url === location.href) {
+            return page.read = true;
+        }
+    }
 }
