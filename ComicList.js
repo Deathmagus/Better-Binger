@@ -68,6 +68,18 @@ ComicList.prototype.markPage = function (page) {
     });
 }
 
+ComicList.prototype.nextURL = function () {
+    for (var i = 0; i < this.comics.length; i++) {
+        var comic = this.comics[i];
+        for (var j = 0; j < comic.pages.length; j++) {
+            var page = comic.pages[j];
+            if (!page.read) {
+                return page.url;
+            }
+        }
+    }
+}
+
 ComicList.prototype.toJSON = function () {
     return JSON.stringify({
         "comics": this.comics,
