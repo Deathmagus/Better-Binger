@@ -6,17 +6,41 @@
  * comicRawData = A complete "comics-item" nodeSet
  */
 function Comic(comicRawData) {
-    var progressLabel = comicRawData.getElementsByClassName('progress-label')[0].textContent.split('/');
-    var title = comicRawData.getElementsByClassName('comics-item-image')[0].firstChild.textContent;
-    var url = comicRawData.getElementsByClassName('comics-item-read')[0].getAttribute('href');
-
-    this.baseURL = url.substring(0, url.lastIndexOf('/') + 1);
-    this.nextComic = parseInt(progressLabel[0]) + 1;
-    this.pages = [];
-    this.title = title;
-    this.unread = progressLabel[1] - progressLabel[0];
 }
 
-Comic.prototype.markPage = function (page) {
+Comic.fromJSON = function (json) {
+    var comic = new Comic();
 
+    comic.baseURL = json.baseURL;
+    comic.nextComic = json.nextComic;
+    comic.pages = json.pages;
+    comic.title = json.title;
+    comic.unread = json.unread;
+
+    return comic;
+}
+
+Comic.fromRaw = function (rawData) {
+    var comic = new Comic();
+
+    var progressLabel = rawData.getElementsByClassName('progress-label')[0].textContent.split('/');
+    var title = rawData.getElementsByClassName('comics-item-image')[0].firstChild.textContent;
+    var url = rawData.getElementsByClassName('comics-item-read')[0].getAttribute('href');
+
+    comic.baseURL = url.substring(0, url.lastIndexOf('/') + 1);
+    comic.nextComic = parseInt(progressLabel[0]) + 1;
+    comic.pages = [];
+    comic.title = title;
+    comic.unread = progressLabel[1] - progressLabel[0];
+
+    return comic;
+}
+
+Comic.prototype.markPage = function (location) {
+    for (var i = 0; i < this.pages.length; i++) {
+        var page = this.pages[i];
+        if (page.url === location.href) {
+            return page.read = true;
+        }
+    }
 }

@@ -21,7 +21,9 @@ ComicList.fromJSON = function (json) {
     json = JSON.parse(json);
     var comicsList = new ComicList();
 
-    comicsList.comics = json.comics;
+    json.comics.forEach(function (comicData) {
+        comicsList.comics.push(new Comic.fromJSON(comicData));
+    });
     comicsList.date = new Date(json.date);
     comicsList.filteredUnread = json.filteredUnread;
     comicsList.selectedPages = json.selectedPages;
@@ -60,12 +62,28 @@ ComicList.load = function () {
     return null;
 }
 
-ComicList.prototype.markPage = function (page) {
-    this.comics.forEach(function (comic) {
-        if (page.contains(comic.baseURL)) {
-            comic.markPage(page);
+ComicList.prototype.markPage = function (location) {
+    var comicList = this;
+    comicList.comics.forEach(function (comic) {
+        if (location.href.contains(comic.baseURL)) {
+            if (comic.markPage(location)) {
+                console.log('Marking page as read');
+                comicList.save();
+            }
         }
     });
+}
+
+ComicList.prototype.nextURL = function () {
+    for (var i = 0; i < this.comics.length; i++) {
+        var comic = this.comics[i];
+        for (var j = 0; j < comic.pages.length; j++) {
+            var page = comic.pages[j];
+            if (!page.read) {
+                return page.url;
+            }
+        }
+    }
 }
 
 ComicList.prototype.toJSON = function () {
