@@ -3,6 +3,7 @@
 // @namespace   com.brianmbauman.betterbinger
 // @description A better way to catch up on your Comic-Rocket backlog.
 // @include     https://www.comic-rocket.com/
+// @include     https://www.comic-rocket.com/navbar/*
 // @include     http://www.comic-rocket.com/*&binge
 // @require     Comic.js
 // @require     ComicList.js
@@ -153,6 +154,7 @@ if (location.href == 'https://www.comic-rocket.com/') {
     comicList.markPage(location);
 
     //Adjust UI
+
     console.log('Adjusting UI');
     var iframe = document.getElementById('readernav');
     console.log(iframe);
