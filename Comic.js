@@ -15,6 +15,7 @@ Comic.fromJSON = function (json) {
     comic.nextComic = json.nextComic;
     comic.pages = json.pages;
     comic.title = json.title;
+    comic.totalPages = json.totalPages;
     comic.unread = json.unread;
 
     return comic;
@@ -31,16 +32,8 @@ Comic.fromRaw = function (rawData) {
     comic.nextComic = parseInt(progressLabel[0]) + 1;
     comic.pages = [];
     comic.title = title;
+    comic.totalPages = progressLabel[1];
     comic.unread = progressLabel[1] - progressLabel[0];
 
     return comic;
-}
-
-Comic.prototype.markPage = function (location) {
-    for (var i = 0; i < this.pages.length; i++) {
-        var page = this.pages[i];
-        if (page.url === location.href) {
-            return page.read = true;
-        }
-    }
 }

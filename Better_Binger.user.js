@@ -3,6 +3,7 @@
 // @namespace   com.brianmbauman.betterbinger
 // @description A better way to catch up on your Comic-Rocket backlog.
 // @include     https://www.comic-rocket.com/
+// @include     https://www.comic-rocket.com/navbar/*
 // @include     http://www.comic-rocket.com/*&binge
 // @require     Comic.js
 // @require     ComicList.js
@@ -71,19 +72,22 @@ function analyzeComics(config) {
             var permittedPages = Math.min(requestedPagesPerDay, config.pagesPerDay - comicsData.selectedPages);
 
             /*
-             Sets comic pages per day and increments total actual pages per day.
+             Sets comic pages per day.
              If we still need pages, but can't round to 1 page per day, use 1 anyway.
              */
-            comicsData.selectedPages += comic.selectedPages = permittedPages > 0 ? permittedPages : 1;
+            comic.selectedPages = permittedPages > 0 ? permittedPages : 1;
 
             //Populate the page array
             for (var i = 0; i < comic.selectedPages; i++) {
                 comic.pages.push({
+                    index: comicsData.selectedPages + i,
                     read: false,
                     url: comic.baseURL + (comic.nextComic + i) + "?mark&binge"
                 });
             }
 
+            //Increments total actual pages per day
+            comicsData.selectedPages += comic.selectedPages;
         }
     });
 
@@ -97,19 +101,13 @@ function analyzeComics(config) {
 
 //TODO: Should be refactored to properly build elements instead of using string bullshit.
 function buildLauncher(comicsData, config) {
-    var node = document.createElement('script');
-    node.setAttribute("type", "text/javascript");
-    var textNode = document.createTextNode("function submit(){window.location.reload(true);}");
-    node.appendChild(textNode);
-    document.getElementsByTagName('head')[0].appendChild(node);
-
     var comicList = document.getElementsByClassName('span8')[0];
     var launcher = document.createElement('div');
     launcher.className = "comics-item";
     launcher.innerHTML = "" +
     "<div class='comics-item-body'>" +
     "<a class='comics-item-image' href='" + comicsData.comics[0].pages[0].url + "'>" +
-    "<span>Your daily " + comicsData.selectedPages + "-page binge!</span>" +
+    "<span>Better Binger: " + comicsData.selectedPages + " pages</span>" +
     "</a>" +
     "<div class='comics-item-action'>" +
     "<a class='comics-item-read' href='" + comicsData.nextURL() + "'>Read</a>" +
@@ -117,51 +115,72 @@ function buildLauncher(comicsData, config) {
     "</div>" +
     "<div class='comics-item-progressrow'>" +
     "<div class='comics-item-readers'>" +
-    "<label style='color:white;float:left;'>Comics: <input id='comicsPerDay' size='20' type='number' value='" + config.comicsPerDay + "' style='width:50px;margin-right:5px;' /></label>" +
-    "<label style='color:white;float:left;'>Pages: <input id='pagesPerDay' size='20' type='number' value='" + config.pagesPerDay + "' style='width:50px;margin-right:5px;' /></label>" +
-    "<label style='color:white;float:left;'>Sort: <select id='sort' size='0' type='number' value='" + config.sort + "' style='width:75px;margin-right:5px;'>" +
-    "<option value='ascending'>Ascending</option><option value='descending'>Descending</option>" +
+    "<label style='color:white;float:left;'>Comics: <input id='comicsPerDay' size='20' type='number' value='" + config.comicsPerDay + "' style='width:40px;margin-right:5px;' disabled /></label>" +
+    "<label style='color:white;float:left;'>Pages: <input id='pagesPerDay' size='20' type='number' value='" + config.pagesPerDay + "' style='width:40px;margin-right:5px;' disabled /></label>" +
+    "<label style='color:white;float:left;'>Sort: <select id='sort' size='0' type='number' value='" + config.sort + "' style='width:100px;margin-right:5px;' disabled >" +
+    "<option value='ascending'>Ascending</option><option value='descending' selected>Descending</option>" +
     "</select></label>" +
-    "<input id='reanalyze' value='Re-analyze' size='20' type='button' style='position:absolute;bottom:-2px;' onclick='submit()' />" +
+    "<input id='reanalyze' value='Re-analyze' size='20' type='button' style='position:absolute;bottom:-2px;' />" +
     "</div>" +
     "</div>";
 
     comicList.insertBefore(launcher, comicList.getElementsByClassName('comics-item')[0]);
 }
 
-function submit() {
-    alert('Clicked!');
-}
-
-//GM_deleteValue('comicList');
-$("body").append(" more text.");
+var location = window.location;
 console.log('Launching Better Binger');
 var config = Config.getConfig();
-//ComicList.clear();
 var comicList = ComicList.get(config);
-var location = window.location;
+
 if (location.href == 'https://www.comic-rocket.com/') {
+    console.log('My Comics');
     buildLauncher(comicList, config);
 
-    //Get Config
+    var reanalyze = document.getElementById('reanalyze');
+    reanalyze.addEventListener("click", function () {
+        GM_deleteValue('comicList');
+        window.location.reload(true);
+    }, false);
 
-    //Get ComicList
-
-    //Build Launcher
 } else if (location.search.endsWith('&binge')) {
+    console.log('Comic Page');
     //Mark current comic as read
     comicList.markPage(location);
 
-    //Adjust UI
-    console.log('Adjusting UI');
-    var iframe = document.getElementById('readernav');
-    console.log(iframe);
-    var navFrame = iframe.document;
-    console.log(navFrame);
-    var navbar = navFrame.getElementById('navbar');
-    console.log(navbar);
-    navFrame.getElementsByClassName('arrow')[1].href = comicList.nextURL();
+} else if (location.href.contains('https://www.comic-rocket.com/navbar/')) {
+    console.log('Navbar');
 
+    var re = /navbar\/(.+)\/\?mark/;
+    var currentPage = comicList.getPageByPartialURL(re.exec(window.document.URL)[1]);
+    var prevPage = comicList.getPageByIndex(parseInt(currentPage.index) - 1);
+    var nextPage = comicList.getPageByIndex(parseInt(currentPage.index) + 1);
+
+    //Adjust UI
+    var navbar = document.body.children[1];
+    var leftButton = navbar.getElementsByClassName('arrow')[0];
+    var rightButton = navbar.getElementsByClassName('arrow')[1];
+
+    var scrubber = document.getElementById('scrubber');
+    var firstNavPage = scrubber.getElementsByClassName('first')[0];
+    var maxNavPages = scrubber.getElementsByClassName('last')[0];
+    var currentNavPage = scrubber.getElementsByClassName('title')[0].childNodes[2];
+    var bar = scrubber.getElementsByClassName('bar')[0];
+    var handle = bar.getElementsByClassName('handle')[0];
+    var overlay = scrubber.getElementsByClassName('overlay')[0];
+
+    console.log('Updating UI');
+    currentNavPage.textContent = "Page " + (parseInt(currentPage.index) + 1);
+    firstNavPage.textContent = "1";
+    maxNavPages.textContent = comicList.selectedPages;
+    bar.style.width = 100 * parseInt(currentPage.index) / (parseInt(comicList.selectedPages) - 1) + "%";
+    bar.innerHTML = null; //Removes handle navigation
+    overlay.style.display = "none";
+
+    console.log('Updating Linking');
+    leftButton.href = prevPage ? prevPage.url : "https://www.comic-rocket.com";
+    rightButton.href = nextPage ? nextPage.url : "https://www.comic-rocket.com";
+
+    console.log('Navbar Updated');
 } else {
     console.log('Nothing to do here.');
 }

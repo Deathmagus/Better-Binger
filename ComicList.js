@@ -62,16 +62,36 @@ ComicList.load = function () {
     return null;
 }
 
-ComicList.prototype.markPage = function (location) {
-    var comicList = this;
-    comicList.comics.forEach(function (comic) {
-        if (location.href.contains(comic.baseURL)) {
-            if (comic.markPage(location)) {
-                console.log('Marking page as read');
-                comicList.save();
+ComicList.prototype.getPageByIndex = function (index) {
+    var result = null;
+    this.comics.forEach(function (comic) {
+        comic.pages.forEach(function (page) {
+            if (page.index === index) {
+                result = page;
+            }
+        });
+    });
+    return result;
+}
+
+ComicList.prototype.getPageByPartialURL = function (partialURL) {
+    for (var i = 0; i < this.comics.length; i++) {
+        var comic = this.comics[i];
+        for (var j = 0; j < comic.pages.length; j++) {
+            var page = comic.pages[j];
+            if (page.url.contains(partialURL)) {
+                return page;
             }
         }
-    });
+    }
+}
+
+ComicList.prototype.markPage = function (location) {
+    var page = this.getPageByPartialURL(location.pathname);
+    if (page.read = true) {
+        console.log('Marking page as read');
+        this.save();
+    }
 }
 
 ComicList.prototype.nextURL = function () {
