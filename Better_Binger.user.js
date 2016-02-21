@@ -17,8 +17,6 @@
 
 //Catch-all - TODO: should be refactored
 function analyzeComics(config) {
-    var filteredTotalUnread = 0;
-
     var comicsRawData = document.getElementsByClassName('comics-item');
     var comicsRawArray = [].slice.call(comicsRawData);
     var comicsData = new ComicList();
@@ -117,7 +115,7 @@ function buildLauncher(comicsData, config) {
     "<div class='comics-item-readers'>" +
     "<label style='color:white;float:left;'>Comics: <input id='comicsPerDay' size='20' type='number' value='" + config.comicsPerDay + "' style='width:40px;margin-right:5px;' disabled /></label>" +
     "<label style='color:white;float:left;'>Pages: <input id='pagesPerDay' size='20' type='number' value='" + config.pagesPerDay + "' style='width:40px;margin-right:5px;' disabled /></label>" +
-    "<label style='color:white;float:left;'>Sort: <select id='sort' size='0' type='number' value='" + config.sort + "' style='width:100px;margin-right:5px;' disabled >" +
+    "<label style='color:white;float:left;'>Sort: <select id='sort' size='0' style='width:100px;margin-right:5px;' disabled >" +
     "<option value='ascending'>Ascending</option><option value='descending' selected>Descending</option>" +
     "</select></label>" +
     "<input id='reanalyze' value='Re-analyze' size='20' type='button' style='position:absolute;bottom:-2px;' />" +
@@ -147,7 +145,7 @@ if (location.href == 'https://www.comic-rocket.com/') {
     //Mark current comic as read
     comicList.markPage(location);
 
-} else if (location.href.includes('https://www.comic-rocket.com/navbar/')) {
+} else if (location.href.contains('https://www.comic-rocket.com/navbar/') && document.referrer.endsWith('&binge')) {
     console.log('Navbar');
 
     var re = /navbar\/(.+)\/\?mark/;

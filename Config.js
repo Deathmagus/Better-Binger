@@ -24,9 +24,9 @@ Config.getConfig = function () {
         console.log('No config - using defaults');
     }
     return config;
-}
+};
 
 Config.sortEnum = {
     ASC: "ascending",
     DESC: "descending"
-}
+};
