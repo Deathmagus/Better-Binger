@@ -19,7 +19,7 @@ Comic.fromJSON = function (json) {
     comic.unread = json.unread;
 
     return comic;
-}
+};
 
 Comic.fromRaw = function (rawData) {
     var comic = new Comic();
@@ -36,4 +36,4 @@ Comic.fromRaw = function (rawData) {
     comic.unread = progressLabel[1] - progressLabel[0];
 
     return comic;
-}
+};
