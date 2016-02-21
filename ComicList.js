@@ -79,7 +79,7 @@ ComicList.prototype.getPageByPartialURL = function (partialURL) {
         var comic = this.comics[i];
         for (var j = 0; j < comic.pages.length; j++) {
             var page = comic.pages[j];
-            if (page.url.contains(partialURL)) {
+            if (page.url.includes(partialURL)) {
                 return page;
             }
         }
