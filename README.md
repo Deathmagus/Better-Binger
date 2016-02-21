@@ -9,7 +9,7 @@ In the future, you can also expect some statistics tracking your pace and progre
 
 ## Getting Started
 1.  Make sure that either Greasemonkey (Firefox) or Tampermonkey (Chrome) is installed on your browser of choice.
-2.  [Install](https://github.com/Deathmagus/Better-Binger/raw/master/Better_Binger.user.js) from GitHub's master branch.  The develop branch should be stable as well, though new features may be incomplete.
+2.  Install from GitHub's [master branch](https://github.com/Deathmagus/Better-Binger/raw/master/Better_Binger.user.js).  The [develop branch](https://github.com/Deathmagus/Better-Binger/raw/develop/Better_Binger.user.js) should be stable as well, though new features may be incomplete.
 3.  Visit the [My Comics](https://www.comic-rocket.com/) page on Comic-Rocket.com to get started - you should see a new link at the top of your "Pages to Read" section.
 
 ## Support
