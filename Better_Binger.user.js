@@ -12,7 +12,7 @@
 // @grant       GM_deleteValue
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.2.0
+// @version     0.2.2
 // ==/UserScript==
 
 //Catch-all - TODO: should be refactored
@@ -26,6 +26,8 @@ function analyzeComics(config) {
 
     //Build comicsData array
     comicsRawArray.forEach(function (comicRawData) {
+        //Ignore broken comics
+        if (comicRawData.getElementsByClassName('comics-item-edit').length > 0) return null;
         var comicData = Comic.fromRaw(comicRawData);
 
         //Only add comic data if it needs to be read.
