@@ -147,7 +147,7 @@ if (location.href == 'https://www.comic-rocket.com/') {
     //Mark current comic as read
     comicList.markPage(location);
 
-} else if (location.href.contains('https://www.comic-rocket.com/navbar/') && document.referrer.endsWith('&binge')) {
+} else if ((location.href.indexOf('https://www.comic-rocket.com/navbar/') != -1) && document.referrer.endsWith('&binge')) {
     console.log('Navbar');
 
     var re = /navbar\/(.+)\/\?mark/;
