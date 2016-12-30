@@ -15,10 +15,11 @@ Config.getConfig = function () {
     var savedConfig;
 
     //If saved config data exist, load it.
-    if (savedConfig = JSON.parse(GM_getValue('config'))) {
-        config.comicsPerDay = savedConfig.comicsPerDay;
-        config.pagesPerDay = savedConfig.pagesPerDay;
-        config.sort = savedConfig.sort;
+    if (savedConfig = GM_getValue('config')) {
+        json = JSON.parse(savedConfig);
+        config.comicsPerDay = json.comicsPerDay;
+        config.pagesPerDay = json.pagesPerDay;
+        config.sort = json.sort;
         console.log('Config loaded:');
     } else {
         console.log('No config - using defaults');
