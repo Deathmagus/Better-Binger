@@ -132,9 +132,9 @@ function buildLauncher(comicsData, config) {
     "</div>" +
     "<div class='comics-item-progressrow'>" +
     "<div class='comics-item-readers'>" +
-    "<label style='color:white;float:left;'>Comics: <input id='comicsPerDay' size='20' type='number' value='" + config.comicsPerDay + "' style='width:40px;margin-right:5px;' disabled /></label>" +
-    "<label style='color:white;float:left;'>Pages: <input id='pagesPerDay' size='20' type='number' value='" + config.pagesPerDay + "' style='width:40px;margin-right:5px;' disabled /></label>" +
-    "<label style='color:white;float:left;'>Sort: <select id='sort' size='0' style='width:100px;margin-right:5px;' disabled >" +
+    "<label style='color:white;float:left;'>Comics: <input id='comicsPerDay' size='20' type='number' value='" + config.comicsPerDay + "' style='width:40px;margin-right:5px;' /></label>" +
+    "<label style='color:white;float:left;'>Pages: <input id='pagesPerDay' size='20' type='number' value='" + config.pagesPerDay + "' style='width:40px;margin-right:5px;' /></label>" +
+    "<label style='color:white;float:left;'>Sort: <select id='sort' size='0' style='width:100px;margin-right:5px;' >" +
     "<option value='ascending'>Ascending</option><option value='descending' selected>Descending</option>" +
     "</select></label>" +
     "<input id='reanalyze' value='Re-analyze' size='20' type='button' style='position:absolute;bottom:-2px;' />" +
@@ -155,6 +155,10 @@ if (location.href == 'https://www.comic-rocket.com/') {
 
     var reanalyze = document.getElementById('reanalyze');
     reanalyze.addEventListener("click", function () {
+        var comicsPerDay = document.getElementById('comicsPerDay').value;
+        var pagesPerDay = document.getElementById('pagesPerDay').value;
+        var sort = document.getElementById('sort').value;
+        config.save(comicsPerDay, pagesPerDay, sort);
         GM_deleteValue('comicList');
         window.location.reload(true);
     }, false);
