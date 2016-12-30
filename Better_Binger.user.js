@@ -12,7 +12,7 @@
 // @grant       GM_deleteValue
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.3.4
+// @version     0.3.5
 // ==/UserScript==
 
 //Catch-all - TODO: should be refactored
@@ -102,10 +102,11 @@ function analyzeComics(config) {
     });
 
     // Load selectedPages for each comic
+    var index = 0;
     comicsData.comics.forEach(function (comic) {
         for (var i = 0; i < comic.selectedPages; i++) {
             comic.pages.push({
-                index: comicsData.selectedPages + i,
+                index: index++,
                 read: false,
                 url: comic.baseURL + (comic.nextComic + i) + "?mark&binge"
             });
