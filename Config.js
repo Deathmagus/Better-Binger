@@ -15,6 +15,7 @@ Config.getConfig = function () {
     var savedConfig;
 
     //If saved config data exist, load it.
+    console.log(GM_getValue('config'));
     if (savedConfig = GM_getValue('config')) {
         console.log(savedConfig);
         config.comicsPerDay = savedConfig.comicsPerDay;
