@@ -12,7 +12,7 @@
 // @grant       GM_deleteValue
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.2.2
+// @version     0.3.4
 // ==/UserScript==
 
 //Catch-all - TODO: should be refactored
@@ -62,38 +62,54 @@ function analyzeComics(config) {
         comicsData.filteredUnread += comic.unread;
     });
 
-    //Calculate percentage of comicsPerDay for each comic, based on unread
-    comicsData.comics.forEach(function (comic) {
+    // Calculate requested pages for each comic, based on unread percentages
+    comicsData.comics.forEach(function(comic) {
+        comic.unreadPercent = comic.unread / comicsData.filteredUnread;
+        comic.selectedPages = comic.unreadPercent * config.pagesPerDay;
+        comicsData.selectedPages += Math.floor(comic.selectedPages);
+    });
 
-        //Keep looking if we haven't met pagesPerDay request
-        if (comicsData.selectedPages < config.pagesPerDay) {
-            comic.unreadPercent = comic.unread / comicsData.filteredUnread;
-            var requestedPagesPerDay = Math.round(comic.unreadPercent * config.pagesPerDay);
-            var permittedPages = Math.min(requestedPagesPerDay, config.pagesPerDay - comicsData.selectedPages);
+    // Resort by largest fraction of selected pages
+    comicsData.comics.sort(function (a, b) {
+        var fractionalA = a.selectedPages%1;
+        var fractionalB = b.selectedPages%1;
 
-            /*
-             Sets comic pages per day.
-             If we still need pages, but can't round to 1 page per day, use 1 anyway.
-             */
-            comic.selectedPages = permittedPages > 0 ? permittedPages : 1;
-
-            //Populate the page array
-            for (var i = 0; i < comic.selectedPages; i++) {
-                comic.pages.push({
-                    index: comicsData.selectedPages + i,
-                    read: false,
-                    url: comic.baseURL + (comic.nextComic + i) + "?mark&binge"
-                });
-            }
-
-            //Increments total actual pages per day
-            comicsData.selectedPages += comic.selectedPages;
+        if (config.sort === Config.sortEnum.ASC) {
+            return fractionalA - fractionalB;
+        } else if (config.sort === Config.sortEnum.DESC) {
+            return fractionalB - fractionalA;
         }
     });
 
-    //Filter to only comics we'll actually display
-    comicsData.comics = comicsData.comics.filter(function (comic) {
-        return (comic.selectedPages > 0);
+    // Round up for each comic until pagesPerDay is met, then round down remainder.
+    comicsData.comics.forEach(function(comic) {
+        if(comicsData.selectedPages < config.pagesPerDay){
+            comic.selectedPages = Math.ceil(comic.selectedPages);
+            comicsData.selectedPages++;
+        } else{
+            comic.selectedPages = Math.floor(comic.selectedPages);
+        }
+    });
+
+    // Resort by selected pages.
+    comicsData.comics.sort(function (a, b) {
+
+        if (config.sort === Config.sortEnum.ASC) {
+            return a.selectedPages - b.selectedPages;
+        } else if (config.sort === Config.sortEnum.DESC) {
+            return b.selectedPages - a.selectedPages;
+        }
+    });
+
+    // Load selectedPages for each comic
+    comicsData.comics.forEach(function (comic) {
+        for (var i = 0; i < comic.selectedPages; i++) {
+            comic.pages.push({
+                index: comicsData.selectedPages + i,
+                read: false,
+                url: comic.baseURL + (comic.nextComic + i) + "?mark&binge"
+            });
+        }
     });
 
     return comicsData;
