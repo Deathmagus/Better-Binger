@@ -12,7 +12,7 @@
 // @grant       GM_deleteValue
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @version     0.3.5
+// @version     0.4.0
 // ==/UserScript==
 
 //Catch-all - TODO: should be refactored
